@@ -9,8 +9,10 @@ source_url       "https://github.com/hopshadoop/hops-hadoop-chef"
 
 
 #link:<a target='_blank' href='http://%host%:50070/'>Launch the WebUI for the NameNode</a> 
-recipe            "hops::nn", "Installs a Hops NameNode"
-recipe            "hops::dn", "Installs a Hops DataNode"
+recipe            "hops::nn", "Installs a HopsFs NameNode"
+recipe            "hops::ndb", "Installs MySQL Cluster (ndb) dal driver for Hops"
+recipe            "hops::format", "Format a HopsFs NameNode"
+recipe            "hops::dn", "Installs a HopsFs DataNode"
 #link:<a target='_blank' href='http://%host%:8088/'>Launch the WebUI for the ResourceManager</a>
 recipe            "hops::rm", "Installs a YARN ResourceManager"
 recipe            "hops::nm", "Installs a YARN NodeManager"
@@ -331,3 +333,29 @@ attribute "install/user",
 attribute "influxdb/graphite/port",
           :description => "Port for influxdb graphite connector",
           :type => "string"
+#GPU settings
+attribute "hops/yarn/min_allocation_gpus",
+          :description => "",
+          :type => "string"
+
+attribute "hops/yarn/max_allocation_gpus",
+          :description => "",
+          :type => "string"
+
+attribute "hops/yarn/groups_enabled",
+          :description => "",
+          :type => "string"
+
+attribute "hops/yarn/groups",
+          :description => "",
+          :type => "string"
+
+attribute "hops/yarn/linux_container_local_user",
+          :description => "",
+          :type => "string"
+
+attribute "hops/yarn/linux_container_limit_users",
+          :description => "",
+          :type => "string"
+
+
