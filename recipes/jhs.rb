@@ -52,6 +52,12 @@ if node.hops.systemd == "true"
     systemd_script = "/usr/lib/systemd/system/#{service_name}.service" 
   end
 
+
+  file systemd_script do
+    action :delete
+    ignore_failure true
+  end
+  
   template systemd_script do
     source "#{service_name}.service.erb"
     owner "root"
@@ -63,6 +69,10 @@ end
     notifies :restart, resources(:service => service_name), :immediately
   end
 
+  kagent_config "#{service_name}" do
+    action :systemd_reload
+  end
+  
   directory "/etc/systemd/system/#{service_name}.service.d" do
     owner "root"
     group "root"
@@ -77,10 +87,6 @@ end
     action :create
   end 
 
-  hops_start "reload_nn" do
-    action :systemd_reload
-  end  
-
 else #sysv
 
   service service_name do
@@ -88,8 +94,6 @@ else #sysv
     supports :restart => true, :stop => true, :start => true, :status => true
     action :nothing
   end
-
-
 
   template "/etc/init.d/#{service_name}" do
     source "#{service_name}.erb"

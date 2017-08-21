@@ -20,12 +20,21 @@ end
 if node.hops.os_defaults == "true" then
 
   # http://blog.cloudera.com/blog/2015/01/how-to-deploy-apache-hadoop-clusters-like-a-boss/
-  node.default.sysctl.allow_sysctl_conf = true
-  node.default.sysctl.params.vm.swappiness = 1
-  node.default.sysctl.params.vm.overcommit_memory = 1
-  node.default.sysctl.params.vm.overcommit_ratio = 100
-  node.default.sysctl.params.net.core.somaxconn= 1024
-  include_recipe 'sysctl::apply'
+
+  # case node.platform
+  # when "ubuntu"
+  #   node.default['sysctl']['conf_file'] = "/etc/sysctl.d/99-chef-hops.conf"
+  # when "rhel"
+  #   node.default['sysctl']['conf_file'] = "/etc/sysctl.d/99-chef-hops.conf"
+  # end
+
+
+  # node.default['sysctl']['allow_sysctl_conf'] = true
+  # node.default['sysctl']['params']['vm']['swappiness'] = 1
+  # node.default['sysctl']['params']['vm']['overcommit_memory'] = 1
+  # node.default['sysctl']['params']['vm']['overcommit_ratio'] = 100
+  # node.default['sysctl']['params']['net']['core']['somaxconn'] = 1024
+  # include_recipe 'sysctl::apply'
 
   #
   # http://www.slideshare.net/vgogate/hadoop-configuration-performance-tuning
@@ -356,7 +365,6 @@ end
    owner node.hops.hdfs.user
    group node.hops.group
    mode "0775"
-   
    action :create
  end
 
@@ -389,22 +397,6 @@ if node.hops.cgroups.eql? "true"
     package "libcgroup" do
     end
   end
-  cgroups_mounted= "/tmp/.cgroups_mounted"
-  bash 'setup_mount_cgroups' do
-    user "root"
-    code <<-EOH
-    set -e
-    if [ ! -d "/sys/fs/cgroup/cpu/hops-yarn" ] ; then
-       mkdir -p /sys/fs/cgroup/cpu/hops-yarn
-    fi
-    if [ ! -d "/sys/fs/cgroup/devices/hops-yarn" ] ; then
-       mkdir -p /sys/fs/cgroup/devices/hops-yarn
-    fi
-    # mount -t cgroup -o cpu cpu /cgroup
-    touch #{cgroups_mounted}
-  EOH
-     not_if { ::File.exist?("#{cgroups_mounted}") }
-  end
 
 end
 
@@ -433,3 +425,54 @@ magic_shell_environment 'HADOOP_PID_DIR' do
 end
 
 
+Chef::Log.info "Number of gpus set was: #{node['hops']['yarn']['gpus']}"
+
+if "#{node['hops']['yarn']['gpus']}".eql?("*")
+
+  bash 'count_num_gpus' do
+  user "root"
+  code <<-EOH
+    nvidia-smi -L | wc -l > /tmp/num_gpus
+    if [ ! -f /tmp/num_gpus ] ; then
+      echo "0" > /tmp/num_gpus
+    fi
+    chmod +r /tmp/num_gpus
+  EOH
+  end
+end
+
+
+directory "/sys/fs/cgroup/cpu/hops-yarn" do
+  owner node['hops']['yarn']['user']
+  group node['hops']['group']
+  mode "0755"
+  action :create
+end
+
+directory "/sys/fs/cgroup/devices/hops-yarn" do
+  owner node['hops']['yarn']['user']
+  group node['hops']['group']
+  mode "0755"
+  action :create
+end
+
+rm_private_ip = private_recipe_ip("hops","rm")
+# This is here because Pydoop consults mapred-site.xml
+# Pydoop is a dependancy of hdfscontents which is installed
+# in hopsworks-chef::default
+template "#{node.hops.home}/etc/hadoop/mapred-site.xml" do 
+  source "mapred-site.xml.erb"
+  owner node.hops.mr.user
+  group node.hops.group
+  mode "755"
+  variables({
+              :rm_private_ip => rm_private_ip
+            })
+end
+
+template "/etc/ld.so.conf.d/hops.conf" do
+  source "hops.conf.erb"
+  owner "root"
+  group "root"
+  mode "644"
+end
