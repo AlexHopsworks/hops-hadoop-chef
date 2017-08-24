@@ -136,7 +136,7 @@ if node.hops.systemd == "true"
 if node.services.enabled == "true"
     notifies :enable, "service[#{service_name}]"
 end
-    notifies :restart, "service[#{service_name}]", :immediately
+    notifies :restart, "service[#{service_name}]"
   end
 
   kagent_config "#{service_name}" do
@@ -198,12 +198,15 @@ end
 
 tmp_dirs   = [ "/tmp", node.hops.hdfs.user_home, node.hops.hdfs.user_home + "/" + node.hops.hdfs.user ]
 
-for d in tmp_dirs
-  hops_hdfs_directory d do
-    action :create_as_superuser
-    owner node.hops.hdfs.user
-    group node.hops.group
-    mode "1775"
+# Only the first NN needs to create the directories
+if my_ip.eql? node['hops']['nn']['private_ips'][0]
+  for d in tmp_dirs
+    hops_hdfs_directory d do
+      action :create_as_superuser
+      owner node.hops.hdfs.user
+      group node.hops.group
+      mode "1775"
+    end
   end
-end
 
+end
