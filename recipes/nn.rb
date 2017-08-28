@@ -22,6 +22,32 @@ if node.hops.rpc.ssl_enabled.eql? "true"
   rpcSocketFactory = node.hops.hadoop.rpc.socket.factory
 end
 
+hopsworks_endpoint = "RPC TLS NOT ENABLED"
+if node.hops.rpc.ssl_enabled.eql? "true"
+  hopsworks_endpoint = "Could not access hopsworks-chef"
+  if node.attribute?("hopsworks")
+    hopsworks_ip = private_recipe_ip("hopsworks", "default")
+    hopsworks_port = node["hopsworks"]["port"]
+    hopsworks_endpoint = "http://#{hopsworks_ip}:#{hopsworks_port}"
+  end
+end
+
+
+livyUser = "livy"
+if node.attribute?("livy")
+  if node['livy'].attribute?("user")
+    livyUser = node[:livy][:user]
+  end
+end
+
+hiveUser = "hive"
+if node.attribute?("hive2")
+  if node['hive2'].attribute?("user")
+    hiveUser = node[:hive2][:user]
+  end
+end
+
+
 myNN = "#{my_ip}:#{nnPort}"
 template "#{node.hops.home}/etc/hadoop/core-site.xml" do 
   source "core-site.xml.erb"
@@ -32,9 +58,12 @@ template "#{node.hops.home}/etc/hadoop/core-site.xml" do
               :firstNN => "hdfs://" + myNN,
               :hopsworks => hopsworksNodes,
               :allNNs => myNN,
+              :livyUser => livyUser,
+              :hiveUser => hiveUser,              
               :kstore => "#{node.kagent.keystore_dir}/#{node['hostname']}__kstore.jks",
               :tstore => "#{node.kagent.keystore_dir}/#{node['hostname']}__tstore.jks",
-              :rpcSocketFactory => rpcSocketFactory
+              :rpcSocketFactory => rpcSocketFactory,
+              :hopsworks_endpoint => hopsworks_endpoint
             })
 end
 

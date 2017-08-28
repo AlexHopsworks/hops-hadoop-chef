@@ -41,6 +41,20 @@ if node.attribute?("hopsworks")
   hopsworksNodes = node[:hopsworks][:default][:private_ips].join(",")
 end
 
+livyUser = "livy"
+if node.attribute?("livy")
+  if node['livy'].attribute?("user")
+    livyUser = node[:livy][:user]
+  end
+end
+
+hiveUser = "hive"
+if node.attribute?("hive2")
+  if node['hive2'].attribute?("user")
+    hiveUser = node[:hive2][:user]
+  end
+end
+
 
 # If the user specified "gpu_enabled" to be true in a cluster definition, then accept that.
 # Else, if cuda/accept_nvidia_download_terms is set to true, then make gpu_enabled true.
@@ -73,6 +87,16 @@ if node.hops.rpc.ssl_enabled.eql? "true"
   rpcSocketFactory = node.hops.hadoop.rpc.socket.factory
 end
 
+hopsworks_endpoint = "RPC TLS NOT ENABLED"
+if node.hops.rpc.ssl_enabled.eql? "true"
+  hopsworks_endpoint = "Could not access hopsworks-chef"
+  if node.attribute?("hopsworks")
+    hopsworks_ip = private_recipe_ip("hopsworks", "default")
+    hopsworks_port = node["hopsworks"]["port"]
+    hopsworks_endpoint = "http://#{hopsworks_ip}:#{hopsworks_port}"
+  end
+end
+
 template "#{node.hops.home}/etc/hadoop/core-site.xml" do 
   source "core-site.xml.erb"
   owner node.hops.hdfs.user
@@ -81,10 +105,13 @@ template "#{node.hops.home}/etc/hadoop/core-site.xml" do
   variables({
               :firstNN => firstNN,
               :hopsworks => hopsworksNodes,
+              :livyUser => livyUser,
+              :hiveUser => hiveUser,              
               :allNNs => allNNIps,
               :kstore => "#{node.kagent.keystore_dir}/#{node['hostname']}__kstore.jks",
               :tstore => "#{node.kagent.keystore_dir}/#{node['hostname']}__tstore.jks",
-              :rpcSocketFactory => rpcSocketFactory
+              :rpcSocketFactory => rpcSocketFactory,
+              :hopsworks_endpoint => hopsworks_endpoint
             })
 end
 
