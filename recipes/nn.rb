@@ -17,35 +17,8 @@ else
   allNNs = "#{node.hops.nn.private_ips[0]}" + ":#{nnPort}"
 end
 
-rpcSocketFactory = "org.apache.hadoop.net.StandardSocketFactory"
-if node.hops.rpc.ssl_enabled.eql? "true"
-  rpcSocketFactory = node.hops.hadoop.rpc.socket.factory
-end
-
-hopsworks_endpoint = "RPC TLS NOT ENABLED"
-if node.hops.rpc.ssl_enabled.eql? "true"
-  hopsworks_endpoint = "Could not access hopsworks-chef"
-  if node.attribute?("hopsworks")
-    hopsworks_ip = private_recipe_ip("hopsworks", "default")
-    hopsworks_port = node["hopsworks"]["port"]
-    hopsworks_endpoint = "http://#{hopsworks_ip}:#{hopsworks_port}"
-  end
-end
-
-
-livyUser = "livy"
-if node.attribute?("livy")
-  if node['livy'].attribute?("user")
-    livyUser = node[:livy][:user]
-  end
-end
-
-hiveUser = "hive"
-if node.attribute?("hive2")
-  if node['hive2'].attribute?("user")
-    hiveUser = node[:hive2][:user]
-  end
-end
+hopsworks_ip = private_recipe_ip("hopsworks", "default")
+hopsworks_endpoint = "http://#{hopsworks_ip}:#{node['hopsworks']['port']}"
 
 
 myNN = "#{my_ip}:#{nnPort}"
@@ -57,12 +30,11 @@ template "#{node.hops.home}/etc/hadoop/core-site.xml" do
   variables({
               :firstNN => "hdfs://" + myNN,
               :hopsworks => hopsworksNodes,
-              :allNNs => myNN,
-              :livyUser => livyUser,
-              :hiveUser => hiveUser,              
-              :kstore => "#{node.kagent.keystore_dir}/#{node['hostname']}__kstore.jks",
-              :tstore => "#{node.kagent.keystore_dir}/#{node['hostname']}__tstore.jks",
-              :rpcSocketFactory => rpcSocketFactory,
+              :hopsworksUser => node[:hopsworks][:user],
+              :livyUser => node[:livy][:user],
+              :hiveUser => node[:hive2][:user],
+              :allNNs => myNN,              
+              :rpcSocketFactory => node['hops']['hadoop']['rpc']['socket']['factory'],
               :hopsworks_endpoint => hopsworks_endpoint
             })
 end
@@ -220,7 +192,7 @@ end
 
 ruby_block 'wait_until_nn_started' do
   block do
-     sleep(5)
+     sleep(10)
   end
   action :run
 end

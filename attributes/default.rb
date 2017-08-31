@@ -1,6 +1,6 @@
 include_attribute "ndb"
 
-default["hops"]["version"]                     = "2.7.3"
+default["hops"]["version"]                     = "2.8.2"
 
 default["hops"]["hdfs"]["user"]                = node["install"]["user"].empty? ? "hdfs" : node["install"]["user"]
 default["hops"]["hdfs"]["superuser_group"]     = "hdfsadmin"
@@ -297,7 +297,7 @@ default["hops"]["ssl"]["client"]["truststore"]["location"]		= "#{node['kagent'][
 default["hops"]["server"]["threadpool"] = 3
 
 # RPC TLS
-default["hops"]["rpc"]["ssl_enabled"] = "false"
+default["hops"]["rpc"]["ssl"] = "false"
 
 # Do not verify the hostname
 default["hops"]["hadoop"]["ssl"]["hostname"]["verifier"]                = "ALLOW_ALL"
@@ -329,7 +329,7 @@ default["hops"]["hops_spark_kafka_example"]["url"]     = "#{node['download_url']
 #GPU
 default["hops"]["yarn"]["min_gpus"]                    = 0
 default["hops"]["yarn"]["max_gpus"]                    = 10
-default["hops"]["yarn"]["gpu_enabled"]                 = "false"
+default["hops"]["gpu"]                                 = "false"
 default["hops"]["yarn"]["gpus"]                        = "*"
 default["hops"]["yarn"]["linux_container_local_user"]  = "#{default["hops"]["group"]}"
 default["hops"]["yarn"]["linux_container_limit_users"] = "false"

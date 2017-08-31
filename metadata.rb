@@ -192,7 +192,7 @@ attribute "hops/url/secondary",
           :description => "Secondary download url of hops distribution",
           :type => 'string'
 
-attribute "hops/rpc/ssl_enabled",
+attribute "hops/rpc/ssl",
           :description => "'true' will enable RPC TLS and 'false' will disable it",
           :type => 'string'
 
@@ -350,7 +350,7 @@ attribute "hops/yarn/max_gpus",
           :description => "Max number of GPUs per container",
           :type => "string"
 
-attribute "hops/yarn/gpu_enabled",
+attribute "hops/gpu",
           :description => "Are GPUs enabled for YARN? Default: false",
           :type => "string"
 
