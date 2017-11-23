@@ -1,4 +1,5 @@
 include_attribute "ndb"
+include_attribute "kzookeeper"
 
 default['hops']['version']                     = "2.8.2.2"
 
@@ -337,3 +338,11 @@ default['hops']['gpu']                                 = "false"
 default['hops']['yarn']['gpus']                        = "*"
 default['hops']['yarn']['linux_container_local_user']  = node['install']['user'].empty? ? "yarnapp" : node['install']['user']
 default['hops']['yarn']['linux_container_limit_users'] = "true"
+
+#Store Small files in NDB
+default['hops']['small_files']['store_in_db']                                       = "true"
+default['hops']['small_files']['max_size']                                          = 65536
+default['hops']['small_files']['on_disk']['max_size']['small']                      = 2000
+default['hops']['small_files']['on_disk']['max_size']['medium']                     = 4000
+default['hops']['small_files']['on_disk']['max_size']['large']                      = 65536
+default['hops']['small_files']['in_memory']['max_size']                             = 1024
