@@ -269,6 +269,10 @@ attribute "hops/dn/data_dir",
           :description => "The directory in which Hadoop's DataNodes store their data",
           :type => 'string'
 
+attribute "hops/dn/data_dir_permissions",
+          :description => "The permissions for the directory in which Hadoop's DataNodes store their data (default: 700)",
+          :type => 'string'
+
 attribute "hops/yarn/nodemanager_hb_ms",
           :description => "Heartbeat Interval for NodeManager->ResourceManager in ms",
           :type => 'string'
@@ -415,4 +419,16 @@ attribute "livy/user",
 
 attribute "hopsworks/user",
           :description => "Hopsworks username",
+          :type => "string"
+
+attribute "hops/jmx/adminPassword",
+          :description => "Password for JMX admin role",
+          :type => "string"
+
+attribute "hopsmonitor/default/private_ips",
+          :description => "Hopsworks username",
+          :type => "string"
+
+attribute "hopsworks/default/private_ips",
+          :description => "Hopsworks private ip",
           :type => "string"

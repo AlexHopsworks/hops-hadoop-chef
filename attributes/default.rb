@@ -16,6 +16,9 @@ default['hopsworks']['user']                   = node['install']['user'].empty? 
 default['hops']['jmx']['username']             = "monitorRole"
 default['hops']['jmx']['password']             = "hadoop"
 
+default['hops']['jmx']['adminUsername']        = "adminRole"
+default['hops']['jmx']['adminPassword']        = "hadoopAdmin"
+
 default['hops']['dir']                         = node['install']['dir'].empty? ? "/srv" : node['install']['dir']
 default['hops']['base_dir']                    = node['hops']['dir'] + "/hadoop"
 default['hops']['home']                        = node['hops']['dir'] + "/hadoop-" + node['hops']['version']
@@ -27,6 +30,7 @@ default['hops']['sbin_dir']                    = node['hops']['base_dir'] + "/sb
 default['hops']['bin_dir']                     = node['hops']['base_dir'] + "/bin"
 default['hops']['data_dir']                    = node['hops']['dir'] + "/hopsdata"
 default['hops']['dn']['data_dir']              = "file://" + node['hops']['data_dir'] + "/hdfs/dn"
+default['hops']['dn']['data_dir_permissions']  = '700'
 default['hops']['nn']['name_dir']              = "file://" + node['hops']['data_dir'] + "/hdfs/nn"
 
 default['hops']['nm']['log_dir']               = node['hops']['logs_dir'] + "/userlogs"
@@ -190,10 +194,9 @@ default['hops']['hdfs']['blocksize']        = "134217728"
 
 default['dal']['download_url']              = "#{node['download_url']}/ndb-dal-#{node['hops']['version']}-#{node['ndb']['version']}.jar"
 default['dal']['lib_url']                   = "#{node['download_url']}/libhopsyarn-#{node['hops']['version']}-#{node['ndb']['version']}.so"
-default['hops']['libhopsnvml_version']      = "1.0"
 default['nvidia']['download_url']           = "#{node['download_url']}/nvidia-management-#{node['hops']['version']}-#{node['ndb']['version']}.jar"
-
-default['dal']['schema_url']                = "#{node['download_url']}/hops.sql"
+default['hops']['libnvml_url']              = "#{node['download_url']}/libhopsnvml-#{node['hops']['version']}.so"
+default['dal']['schema_url']                = "#{node['download_url']}/hops-#{node['hops']['version']}-#{node['ndb']['version']}.sql"
 
 default['hops']['recipes']                  = %w{ nn dn rm nm jhs ps }
 
@@ -346,3 +349,6 @@ default['hops']['small_files']['on_disk']['max_size']['small']                  
 default['hops']['small_files']['on_disk']['max_size']['medium']                     = 4000
 default['hops']['small_files']['on_disk']['max_size']['large']                      = 65536
 default['hops']['small_files']['in_memory']['max_size']                             = 1024
+
+default['hopsmonitor']['default']['private_ips']                                    = ['10.0.2.15']
+default['hopsworks']['default']['private_ips']                                      = ['10.0.2.15']
