@@ -79,7 +79,7 @@ default['hops']['hdfs']['umask']               = "0007"
 
 
 default['hops']['root_url']                    = node['download_url']
-default['hops']['dist_url']                    = node['hops']['root_url'] + "/hops-" + node['hops']['version'] + ".tgz"
+default['hops']['dist_url']                    = "https://repo.hops.works/dev/jenkins/alex/hops/hops-3.2.0.5-EE-SNAPSHOT.tgz"
 
 default['hops']['fuse']['dist_url']            = node['hops']['root_url'] + "/hops-fuse-mount-" + node['hops']['fuse']['version'] 
 default['hops']['fuse']['staging_folder']      = node['hops']['dir'] + "/hops-staging"
@@ -245,7 +245,7 @@ default['hops']['log']['remote_retention']     = "150d"
 default['ndb']['libndb']                    = "#{node['mysql']['version_dir']}/lib"
 default['mysql']['port']                    = default['ndb']['mysql_port']
 
-default['hops']['schema_dir']               = "#{node['hops']['root_url']}/hops-schemas"
+default['hops']['schema_dir']               = "https://repo.hops.works/dev/jenkins/alex/hops/hops-schemas"
 
 default['hops']['ndb']['version']              = "21.04.0"
 
@@ -253,7 +253,7 @@ if node['hops']['ndb']['version'] != ""
   node.override['ndb']['version'] = node['hops']['ndb']['version']
 end
 
-default['dal']['download_url']              = "#{node['hops']['root_url']}/ndb-dal-#{node['hops']['version']}-#{node['ndb']['version']}.jar"
+default['dal']['download_url']              = "https://repo.hops.works/dev/jenkins/alex/hops/ndb-dal-3.2.0.5-EE-SNAPSHOT-21.04.0.jar"
 
 default['hops']['recipes']                  = %w{ nn dn rm nm jhs ps }
 
