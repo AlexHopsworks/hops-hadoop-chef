@@ -160,7 +160,7 @@ end
 
 if node['install']['enterprise']['install'].casecmp? "true"
   rstudio_filename = File.basename( node['hops']['docker']['rstudio']['download_url'])
-  rstudio_image_url ="#{node['install']['enterprise']['download_url']}/docker-tars/#{node['hops']['docker_img_version']}/#{rstudio_filename}"
+  rstudio_image_url ="#{node['install']['enterprise']['download_url']}/docker-tars/#{node['hops']['docker_img_version']}-SNAPSHOT/#{rstudio_filename}"
   rstudio_image = "#{node['hops']['docker']['rstudio']['image']['name']}:#{node['hops']['docker_img_version']}"
   image_url ="#{node['install']['enterprise']['download_url']}/docker-tars/#{node['hops']['docker_img_version']}/#{base_filename}"
   download_rstudio_command = "wget --user #{node['install']['enterprise']['username']} --password #{node['install']['enterprise']['password']} #{rstudio_image_url}"
