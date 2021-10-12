@@ -1,12 +1,11 @@
 include_recipe "hops::default"
+include_recipe "hops::hdfs_certs"
 
 if node['hops']['docker']['enabled'].eql?("true")
   if node['install']['managed_docker_registry'].casecmp?("false")
     include_recipe "hops::docker_image"
   end 
 end
-
-template_ssl_server()
 
 crypto_dir = x509_helper.get_crypto_dir(node['hops']['yarn']['user'])
 kagent_hopsify "Generate x.509" do
