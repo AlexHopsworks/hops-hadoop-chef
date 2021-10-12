@@ -1,4 +1,5 @@
 include_recipe "hops::default"
+include_recipe "hops::hdfs_certs"
 
 template "#{node['hops']['conf_dir']}/yarn-jmxremote.password" do
   source "jmxremote.password.erb"
@@ -13,8 +14,6 @@ if node['hops']['docker']['enabled'].eql?("true")
     include_recipe "hops::docker_image"
   end 
 end
-
-template_ssl_server()
 
 crypto_dir = x509_helper.get_crypto_dir(node['hops']['yarn']['user'])
 kagent_hopsify "Generate x.509" do

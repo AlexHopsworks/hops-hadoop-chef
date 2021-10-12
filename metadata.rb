@@ -21,6 +21,7 @@ recipe            "hops::rt", "Installs a ResourceTracker server for YARN"
 recipe            "hops::client", "Installs libaries and configuration files for writing HDFS and YARN progams"
 recipe            "hops::purge", "Removes all hops-hadoop files and dirs and ndb-dal, but doesnt drop hops db from NDB"
 recipe            "hops::_config", "Internal recipe for setting config values"
+recipe            "hops::hdfs_certs", "Setup hdfs user certificates"
 
 depends 'magic_shell', '~> 1.0.0'
 depends 'sysctl', '~> 1.0.3'
